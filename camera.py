@@ -33,6 +33,8 @@ class Camera:
         while True:
             _, frame = self.cap.read()
             _, frame = self.cap.read()
+            frame = cv2.flip(frame, 0)
+            frame = cv2.flip(frame, 1)
             frame = imutils.resize(frame, width=900)
 
             # resize the frame, blur it, and convert it to the HSV
@@ -60,6 +62,8 @@ class Camera:
         ret, fram = self.cap.read()
         if not ret:
             raise Exception("Não capturou imagem")
+        fram = cv2.flip(fram,0)
+        fram = cv2.flip(fram, 1)
         fram = imutils.resize(fram, width=900)
         frame = copy(fram)
         frame = cv2.blur(frame,(5,5))
@@ -105,7 +109,9 @@ class Camera:
             x_ant = self.teclado[1][0]
             for x in range(self.teclado[1][0]+int(abs(self.teclado[0][0] - self.teclado[1][0])/12), self.teclado[0][0] + 10 , int(abs(self.teclado[0][0] - self.teclado[1][0])/12)):
                 cv2.rectangle(frame,(x_ant, self.teclado[1][1]), (int(x), self.teclado[0][1]), (100,100,100), 2)
-                self.teclado_coord.append((self.teclado[1][1] + 100, self.teclado[0][1] - 100, x_ant + 3 , x - 3))
+                self.teclado_coord.append((self.teclado[1][1] + 70, self.teclado[1][1] + 150, x_ant + 3 , x - 3))
+                cv2.imshow("tecla",frame[self.teclado[1][1] + 70: self.teclado[1][1] + 150, x_ant + 3 : x - 3])
+                cv2.waitKey(0)
                 x_ant = int(x)
         else:
             print("Erro: Sem coordenadas de teclado")
@@ -143,6 +149,8 @@ class Camera:
     def teclas(self):
         ret, fram = self.cap.read()
         ret, fram = self.cap.read()
+        fram = cv2.flip(fram, 0)
+        fram = cv2.flip(fram, 1)
         if not ret:
             raise Exception("Não capturou imagem")
         fram = imutils.resize(fram, width=900)
@@ -154,20 +162,24 @@ class Camera:
         i = 0
         for (y1, y2, x1, x2) in self.teclado_coord:
             media = cv2.mean(cv2.cvtColor(frame[y1:y2, x1:x2], cv2.COLOR_BGR2GRAY))[0]
-            if not (media < self.teclado_roi[i] + 40 and media > self.teclado_roi[i] - 40):
+            if self.teclado_roi[i] - 20 > media:
                 saida_tec[i] = 1
-            self.teclado_roi[i] = media
+            else:
+                saida_tec[i] = 0
+            #self.teclado_roi[i] = media
             i += 1
 
         i=0
         for (y1, y2, x1, x2) in self.controles_coord:
             media = cv2.mean(cv2.cvtColor(frame[y1:y2, x1:x2], cv2.COLOR_BGR2GRAY))[0]
-            if not (media < self.controles_roi[i] + 40 and media > self.controles_roi[i] - 40):
+            if media < self.controles_roi[i] - 20 :
                 saida_con[i] = 1
-            self.controles_roi[i] = media
-        cv2.imshow("play", frame)
-        i += 1
+            else:
+                saida_con[i] = 0
+            # self.controles_roi[i] = media
+            i += 1
 
+        cv2.imshow("play", frame)
         return saida_tec, saida_con
 
 
