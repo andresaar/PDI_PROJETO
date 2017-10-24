@@ -110,8 +110,8 @@ class Camera:
             for x in range(self.teclado[1][0]+int(abs(self.teclado[0][0] - self.teclado[1][0])/12), self.teclado[0][0] + 10 , int(abs(self.teclado[0][0] - self.teclado[1][0])/12)):
                 cv2.rectangle(frame,(x_ant, self.teclado[1][1]), (int(x), self.teclado[0][1]), (100,100,100), 2)
                 self.teclado_coord.append((self.teclado[1][1] + 70, self.teclado[1][1] + 150, x_ant + 3 , x - 3))
-                cv2.imshow("tecla",frame[self.teclado[1][1] + 70: self.teclado[1][1] + 150, x_ant + 3 : x - 3])
-                cv2.waitKey(0)
+                #cv2.imshow("tecla",frame[self.teclado[1][1] + 70: self.teclado[1][1] + 150, x_ant + 3 : x - 3])
+                #cv2.waitKey(0)
                 x_ant = int(x)
         else:
             print("Erro: Sem coordenadas de teclado")
@@ -162,7 +162,7 @@ class Camera:
         i = 0
         for (y1, y2, x1, x2) in self.teclado_coord:
             media = cv2.mean(cv2.cvtColor(frame[y1:y2, x1:x2], cv2.COLOR_BGR2GRAY))[0]
-            if self.teclado_roi[i] - 20 > media:
+            if self.teclado_roi[i] - 40 > media:
                 saida_tec[i] = 1
             else:
                 saida_tec[i] = 0
@@ -172,7 +172,7 @@ class Camera:
         i=0
         for (y1, y2, x1, x2) in self.controles_coord:
             media = cv2.mean(cv2.cvtColor(frame[y1:y2, x1:x2], cv2.COLOR_BGR2GRAY))[0]
-            if media < self.controles_roi[i] - 20 :
+            if media < self.controles_roi[i] - 40 :
                 saida_con[i] = 1
             else:
                 saida_con[i] = 0
